@@ -28,4 +28,31 @@ for(const folder of commandsFolder){
     }
 }
 
+client.on(Events.InteractionCreate, async (interaction) =>{
+    if(!interaction.isChatInputCommand()) return;
+
+    const command = interaction.commands.get(interaction.commandName);
+
+    if(!command) {
+        console.error(`No command matches ${interaction.commandName}`);
+    }
+
+    try{
+        await command.execute(interaction);
+    } catch(error){
+        console.error(error);
+                if (interaction.replied || Interaction.deferred) {
+                    await interaction.followUp({
+                        content: 'There was an error while executing this command!',
+                        flgas: MessageFlags.Ephemeral,
+                    });
+                } else {
+                    await interaction.reply({
+                        content: 'There was an error while executing this command',
+                        flgas: MessageFlags.Ephemeral,
+                    });
+                }
+            }
+})
+
 client.login(token);
